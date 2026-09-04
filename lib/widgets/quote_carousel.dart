@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -8,13 +7,14 @@ import '../theme/app_theme.dart';
 import 'glow_card.dart';
 
 /// Carrossel de frases que troca sozinho a cada [interval], aceita arraste e
-/// tem um botao de sorteio. A transicao usa curva organica: os cards vizinhos
-/// encolhem e escurecem, como se estivessem mais fundo na caverna.
+/// tem setas nas laterais para avancar e voltar. A transicao usa curva
+/// organica: os cards vizinhos encolhem e escurecem, como se estivessem mais
+/// fundo na caverna.
 class QuoteCarousel extends StatefulWidget {
   const QuoteCarousel({
     super.key,
     required this.quotes,
-    this.interval = const Duration(seconds: 7),
+    this.interval = const Duration(seconds: 9),
   });
 
   final List<Quote> quotes;
@@ -26,9 +26,12 @@ class QuoteCarousel extends StatefulWidget {
 
 class _QuoteCarouselState extends State<QuoteCarousel> {
   late final PageController _controller;
-  final _random = Random();
   Timer? _timer;
   int _index = 0;
+
+  /// Altura fixa do palco. As frases longas (Monte Cristo, Fullmetal) sao a
+  /// medida — as curtas apenas centralizam dentro do mesmo espaco.
+  static const _stageHeight = 268.0;
 
   @override
   void initState() {
@@ -52,12 +55,11 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
     );
   }
 
-  void _shuffle() {
+  /// Passo manual: anda uma frase e reinicia a contagem do autoplay.
+  void _step(int delta) {
     if (widget.quotes.length < 2) return;
-    var next = _random.nextInt(widget.quotes.length);
-    if (next == _index) next = (next + 1) % widget.quotes.length;
-    _goTo(next);
-    _startTimer(); // reinicia a contagem apos interacao do usuario
+    _goTo(_index + delta);
+    _startTimer();
   }
 
   @override
@@ -71,28 +73,56 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
   Widget build(BuildContext context) {
     if (widget.quotes.isEmpty) return const SizedBox.shrink();
 
+    final multiple = widget.quotes.length > 1;
+
     return Column(
       children: [
         SizedBox(
-          height: 200,
-          child: NotificationListener<ScrollNotification>(
-            // Ao arrastar manualmente, reinicia o tempo do autoplay.
-            onNotification: (notification) {
-              if (notification is ScrollEndNotification) _startTimer();
-              return false;
-            },
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: widget.quotes.length,
-              onPageChanged: (page) => setState(() => _index = page),
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: _QuoteCard(
-                  quote: widget.quotes[index],
-                  active: index == _index,
+          height: _stageHeight,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              NotificationListener<ScrollNotification>(
+                // Ao arrastar manualmente, reinicia o tempo do autoplay.
+                onNotification: (notification) {
+                  if (notification is ScrollEndNotification) _startTimer();
+                  return false;
+                },
+                child: PageView.builder(
+                  controller: _controller,
+                  itemCount: widget.quotes.length,
+                  onPageChanged: (page) => setState(() => _index = page),
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: _QuoteCard(
+                      quote: widget.quotes[index],
+                      active: index == _index,
+                    ),
+                  ),
                 ),
               ),
-            ),
+
+              // Setas sobre as bordas do palco, na faixa que o card vizinho
+              // deixa livre.
+              if (multiple) ...[
+                Positioned(
+                  left: 0,
+                  child: _Arrow(
+                    icon: Icons.chevron_left,
+                    label: 'Frase anterior',
+                    onTap: () => _step(-1),
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  child: _Arrow(
+                    icon: Icons.chevron_right,
+                    label: 'Proxima frase',
+                    onTap: () => _step(1),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
         const SizedBox(height: 18),
@@ -116,23 +146,46 @@ class _QuoteCarouselState extends State<QuoteCarousel> {
                       : null,
                 ),
               ),
-            const SizedBox(width: 14),
-            Pressable(
-              onTap: _shuffle,
-              pressedScale: 0.88,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.rim),
-                  color: Colors.white.withValues(alpha: 0.03),
-                ),
-                child: const Icon(Icons.shuffle, size: 15, color: AppColors.ash),
-              ),
-            ),
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Seta lateral: circulo translucido que acende de leve sobre o cenario.
+class _Arrow extends StatelessWidget {
+  const _Arrow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: label,
+      child: Pressable(
+        onTap: onTap,
+        pressedScale: 0.86,
+        child: Container(
+          width: 36,
+          height: 36,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.void_.withValues(alpha: 0.72),
+            border: Border.all(color: AppColors.rim),
+            boxShadow: AppGlow.focus(AppColors.soul, opacity: 0.14),
+          ),
+          child: Icon(icon, size: 20, color: AppColors.soul),
+        ),
+      ),
     );
   }
 }
@@ -156,7 +209,7 @@ class _QuoteCard extends StatelessWidget {
         child: GlowCard(
           accent: AppColors.soul,
           active: active,
-          padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
+          padding: const EdgeInsets.fromLTRB(26, 20, 26, 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -164,24 +217,29 @@ class _QuoteCard extends StatelessWidget {
               Text(
                 '“',
                 style: AppType.display(
-                  size: 40,
+                  size: 34,
                   height: 0.9,
                   color: AppColors.soul.withValues(alpha: 0.55),
                   shadows: AppGlow.text(AppColors.soul, blur: 18, opacity: 0.35),
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               Flexible(
                 child: Text(
                   quote.text,
-                  maxLines: 4,
+                  maxLines: 9,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.body(size: 14.5, height: 1.65, weight: FontWeight.w500),
+                  style: AppType.body(size: 13.5, height: 1.6, weight: FontWeight.w500),
                 ),
               ),
               if (quote.author.isNotEmpty) ...[
-                const SizedBox(height: 14),
-                Text('— ${quote.author}'.toUpperCase(), style: AppType.overline(size: 9)),
+                const SizedBox(height: 12),
+                Text(
+                  '— ${quote.author}'.toUpperCase(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppType.overline(size: 8.5),
+                ),
               ],
             ],
           ),

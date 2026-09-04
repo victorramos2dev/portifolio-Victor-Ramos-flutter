@@ -240,21 +240,47 @@ const attributes = <Attribute>[
 
 const quotes = <Quote>[
   Quote(
-    text: 'Primeiro faca funcionar, depois faca certo, depois faca rapido.',
-    author: 'Kent Beck',
+    text:
+        'O essencial é invisível aos olhos, e só se vê bem com o coração.',
+    author: 'O Pequeno Príncipe',
+  ),
+  Quote(
+    text: 'Sonhe e continue sonhando até o seu sonho tornar-se realidade.',
+    author: 'Aerosmith',
   ),
   Quote(
     text:
-        'Programar e a arte de contar a outro humano o que o computador deve fazer.',
-    author: 'Donald Knuth',
+        'A vida é uma tempestade (...) Um dia você está tomando sol e no dia '
+        'seguinte o mar te lança contra as rochas. O que faz de você um homem '
+        'é o que você faz quando a tempestade vem.',
+    author: 'O Conde de Monte Cristo, Alexandre Dumas',
   ),
   Quote(
-    text: 'A melhor forma de prever o futuro e inventa-lo.',
-    author: 'Alan Kay',
+    text:
+        '(...) Não há monumentos dedicados a mim e o meu nome em breve será '
+        'esquecido, mas amei outra pessoa com toda a minha alma e coração e, '
+        'para mim, isso sempre bastou.',
+    author: 'Diário de uma Paixão, Nicholas Sparks',
   ),
   Quote(
-    text: 'Nenhum plano sobrevive ao contato com os jogadores — nem com producao.',
-    author: '',
+    text:
+        'A felicidade pode ser encontrada mesmo nas horas mais difíceis, se '
+        'você lembrar de acender a luz.',
+    author: 'Alvo Dumbledore, Harry Potter e o Prisioneiro de Azkaban',
+  ),
+  Quote(
+    text:
+        'Estou do lado de Aslam, mesmo que não haja Aslam. Quero viver como um '
+        'Narniano, mesmo que Nárnia não exista.',
+    author: 'Brejeiro, As Crônicas de Nárnia',
+  ),
+  Quote(
+    text:
+        'Não se pode aprender nada de uma lição que não seja acompanhada por '
+        'dor, já que não se pode conseguir nada sem um sacrifício. Mas quando '
+        'você aguenta essa dor e a supera, as pessoas conseguem um coração '
+        'forte que não perde para nada. Sim, um coração de aço.',
+    author: 'Fullmetal Alchemist',
   ),
 ];
 

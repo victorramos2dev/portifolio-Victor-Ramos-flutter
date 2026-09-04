@@ -69,7 +69,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     final visible = _visibleProjects(likes);
 
     return SceneryPage(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 48),
+      // Sem barra de titulo, o topo precisa de folga propria.
+      padding: const EdgeInsets.fromLTRB(20, 36, 20, 48),
       children: [
         // ---------- Frases ----------
         const SectionTitle(

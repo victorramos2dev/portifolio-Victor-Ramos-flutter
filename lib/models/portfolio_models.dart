@@ -189,7 +189,8 @@ class Project {
   final List<String> tags;
   final IconData icon;
 
-  /// Duas cores usadas na capa quando nao ha imagem.
+  /// Cor de identidade do projeto. A capa e sempre preta; a primeira cor so
+  /// tinge o icone gigante quando o projeto nao tem imagem.
   final List<Color> gradient;
 
   /// Pontos principais listados no card.

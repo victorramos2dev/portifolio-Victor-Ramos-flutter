@@ -5,8 +5,8 @@ import '../state/likes_controller.dart';
 import '../theme/app_theme.dart';
 import 'glow_card.dart';
 
-/// Card de um projeto: capa (imagem ou gradiente), contexto, pontos
-/// principais, tecnologias e o botao de curtir.
+/// Card de um projeto: capa em fundo preto, contexto, pontos principais,
+/// tecnologias e o botao de curtir.
 class ProjectCard extends StatelessWidget {
   const ProjectCard({super.key, required this.project});
 
@@ -121,7 +121,7 @@ class _Cover extends StatelessWidget {
     final content = Stack(
       fit: StackFit.expand,
       children: [
-        _GradientCover(project: project, showIcon: cover == null),
+        _BlackCover(project: project, showIcon: cover == null),
 
         // Imagem em assets/images/projects/ quando existir.
         if (cover != null)
@@ -138,7 +138,7 @@ class _Cover extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0x00000000), Color(0x990B0C10)],
+              colors: [Color(0x00000000), Color(0x99000000)],
               stops: [0.55, 1.0],
             ),
           ),
@@ -160,8 +160,10 @@ class _Cover extends StatelessWidget {
   }
 }
 
-class _GradientCover extends StatelessWidget {
-  const _GradientCover({required this.project, this.showIcon = true});
+/// Fundo da capa: preto puro, para que logos com transparencia apareçam
+/// limpos. A cor do projeto sobrou apenas no icone de reserva, bem apagado.
+class _BlackCover extends StatelessWidget {
+  const _BlackCover({required this.project, this.showIcon = true});
 
   final Project project;
 
@@ -171,22 +173,13 @@ class _GradientCover extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            project.gradient.first.withValues(alpha: 0.75),
-            project.gradient.last.withValues(alpha: 0.45),
-          ],
-        ),
-      ),
+      decoration: const BoxDecoration(color: Colors.black),
       child: showIcon
           ? Opacity(
-              opacity: 0.16,
+              opacity: 0.22,
               child: Align(
                 alignment: const Alignment(1.15, 0.9),
-                child: Icon(project.icon, size: 130, color: Colors.white),
+                child: Icon(project.icon, size: 130, color: project.gradient.first),
               ),
             )
           : null,

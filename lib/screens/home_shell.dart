@@ -7,9 +7,9 @@ import '../widgets/glow_card.dart';
 import 'about_screen.dart';
 import 'projects_screen.dart';
 
-/// Casca do app. A barra do topo e a de baixo flutuam sobre o cenario com
-/// desfoque, como se a camera focasse o conteudo e deixasse o fundo fora de
-/// foco.
+/// Casca do app. Sem barra de titulo: a navegacao inteira mora na barra de
+/// baixo, que flutua sobre o cenario com desfoque — como se a camera focasse
+/// o conteudo e deixasse o fundo fora de foco.
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
@@ -20,71 +20,10 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  static const _sections = [
-    (overline: 'Capitulo I', title: 'Apresentacao'),
-    (overline: 'Capitulo II', title: 'Projetos'),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final section = _sections[_index];
-
     return Scaffold(
       extendBody: true,
-      extendBodyBehindAppBar: true,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(64),
-        child: _FrostedBar(
-          border: const Border(bottom: BorderSide(color: AppColors.rim)),
-          child: SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(section.overline.toUpperCase(), style: AppType.overline(size: 8.5)),
-                        const SizedBox(height: 3),
-                        // A troca de titulo desliza junto com a aba.
-                        AnimatedSwitcher(
-                          duration: AppMotion.medium,
-                          switchInCurve: AppMotion.organic,
-                          switchOutCurve: AppMotion.organic,
-                          transitionBuilder: (child, animation) => FadeTransition(
-                            opacity: animation,
-                            child: SlideTransition(
-                              position: Tween(
-                                begin: const Offset(0, 0.4),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              child: child,
-                            ),
-                          ),
-                          child: Text(
-                            section.title,
-                            key: ValueKey(section.title),
-                            style: AppType.display(size: 17, letterSpacing: 1.6),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.change_history,
-                    size: 16,
-                    color: AppColors.soul.withValues(alpha: 0.5),
-                    shadows: AppGlow.text(AppColors.soul, blur: 14, opacity: 0.4),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
       // IndexedStack preserva a rolagem e o estado de cada tela ao alternar.
       body: IndexedStack(
         index: _index,

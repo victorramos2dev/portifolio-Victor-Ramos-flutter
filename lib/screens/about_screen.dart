@@ -22,7 +22,8 @@ class AboutScreen extends StatelessWidget {
     final Curiosity? highlight = highlights.isEmpty ? null : highlights.first;
 
     return SceneryPage(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 48),
+      // Sem barra de titulo, o topo precisa de folga propria.
+      padding: const EdgeInsets.fromLTRB(20, 36, 20, 48),
       children: [
         ProfileHeader(profile: data.profile),
         const SizedBox(height: 44),
